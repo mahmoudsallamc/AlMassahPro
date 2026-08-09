@@ -1,0 +1,139 @@
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المساح الزراعي PRO</title>
+<!-- مكتبة الأيقونات -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- مكتبة تحويل HTML إلى PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- شاشة البداية -->
+<div id="splash-screen" class="splash">
+    <div class="splash-content">
+        <div class="logo">🌾</div>
+        <h1>المساح الزراعي <span class="pro-text">PRO</span></h1>
+        <p>𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗱 𝗯𝘆<br><strong class="dev-name">𝕄𝕒𝕙𝕞𝕠𝕦𝕕 𝕊𝕒𝕝𝕝𝕒𝕞</strong></p>
+    </div>
+</div>
+
+<div class="app">
+    <!-- شريط التنقل بين الحاسبة والمحفوظات -->
+    <nav class="top-nav">
+        <button class="nav-btn active" onclick="toggleView('main')">🧮 الحاسبة</button>
+        <button class="nav-btn" onclick="toggleView('history')">💾 المحفوظات</button>
+    </nav>
+
+    <!-- الواجهة الرئيسية -->
+    <div id="main-view">
+        <header class="header">
+            <div class="logo">🌾</div>
+            <h1>المساح الزراعي <span class="pro-text">PRO</span></h1>
+            <p>لحساب مساحة الأراضي الزراعية بسهولة</p>
+            <p>👨‍💻 𝗱𝗲𝘃: 𝗠𝗮𝗵𝗺𝗼𝘂𝗱 𝗦𝗮𝗹𝗹𝗮𝗺</p>
+        </header>
+
+        <section class="card">
+            <h2>⚙ إعدادات القياس</h2>
+            <label>نوع القياس</label>
+            <div class="measure-grid">
+                <button class="option active" onclick="selectMeasure('full',this)">بوصة</button>
+                <button class="option" onclick="selectMeasure('half',this)">نصف بوصة</button>
+                <button class="option full-width" onclick="selectMeasure('meter',this)">متر</button>
+            </div>
+
+            <label>نوع المقاسة</label>
+            <div class="options divider-options">
+                <button class="option active" onclick="selectDivider(14,this)">14</button>
+                <button class="option" onclick="selectDivider(12.5,this)">12.5</button>
+            </div>
+
+            <label>شكل الأرض 📐</label>
+            <div class="drawing-box">
+                <svg id="land-svg" viewBox="0 0 200 200">
+                    <polygon id="land-shape" points="50,50 150,50 150,150 50,150" />
+                </svg>
+                <p id="drawing-hint">اكتب الأبعاد لرسم الأرض</p>
+            </div>
+
+            <label>عرض من فوق</label>
+            <input id="topWidth" type="number" placeholder="عرض من فوق" oninput="drawLand()">
+            <label>عرض من تحت</label>
+            <input id="bottomWidth" type="number" placeholder="عرض من تحت" oninput="drawLand()">
+            <label>الطول</label>
+            <input id="length" type="number" placeholder="الطول" oninput="drawLand()">
+
+            <button class="calculate" onclick="calculateArea()">🧮 احسب المساحة</button>
+        </section>
+
+        <!-- قسم النتيجة -->
+        <section class="result-card" id="pdf-content">
+            <h2>📊 النتيجة</h2>
+            <div class="result-box" id="result-box">
+                <h3 id="feddan">0 فدان</h3>
+                <h3 id="qirat">0 قيراط</h3>
+                <h3 id="saham">0 سهم</h3>
+            </div>
+            <div class="meter-result" id="meter-result-box">
+                <h3 id="squareMeters">0 متر مربع</h3>
+            </div>
+        </section>
+
+        <!-- قسم الإجراءات (يظهر بعد الحساب) -->
+        <section class="action-card" id="action-section" style="display: none;">
+            <input type="text" id="operationName" placeholder="أدخل اسم العملية لحفظها (اختياري)">
+            <div class="action-buttons">
+                <button class="btn-save" onclick="saveOperation()"><i class="fas fa-save"></i> حفظ</button>
+                <button class="btn-share" onclick="shareOperation()"><i class="fas fa-share-alt"></i> مشاركة</button>
+                <button class="btn-pdf" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- واجهة المحفوظات -->
+    <div id="history-view" style="display: none;">
+        <section class="card history-card">
+            <h2>💾 العمليات المحفوظة</h2>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الأبعاد</th>
+                            <th>النتيجة</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- يتم إدراج المحفوظات هنا برمجياً -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- الفوتر الاحترافي -->
+    <footer class="pro-footer">
+        <a href="https://wa.me/201018812496" target="_blank" class="footer-wa-btn">
+            <i class="fab fa-whatsapp"></i> للتواصل مع المطور
+        </a>
+        <p class="follow-text">⤵️ FOLLOW US </p>
+        <div class="social-icons">
+            <a href="https://www.facebook.com/Mahmoudsallamc" target="_blank" class="fb"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/Mahmoudsallamc" target="_blank" class="ig"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@zmahmoudsallam?_r=1&_t=ZS-98kMgGhnWFz" target="_blank" class="tk"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <div class="copyright">
+            © 𝐁𝐲/ 𝐌𝐚𝐡𝐦𝐨𝐮𝐝 𝐒𝐚𝐥𝐥𝐚𝐦<br>
+      جميع الحقوق محفوظة 𝟐𝟎𝟐𝟔
+        </div>
+    </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
